@@ -150,6 +150,32 @@
   .choice-opt input{accent-color:var(--plum); width:18px; height:18px; flex:none;}
   .choice-opt.selected{border-color:var(--plum); background:#FBF1F8;}
 
+  .checkbox-opt{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--card);
+    cursor:pointer;
+    font-size:14px;
+    line-height:1.4;
+  }
+  .checkbox-opt input{accent-color:var(--plum); width:18px; height:18px; flex:none; margin-top:2px;}
+  .checkbox-opt.selected{border-color:var(--plum); background:#FBF1F8;}
+
+  .disclaimer{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--ink-soft);
+    background:var(--leaf-soft);
+    border:1.5px solid #C7D6BB;
+    border-radius:12px;
+    padding:12px 14px;
+    margin:4px 0 18px;
+  }
+
   /* --- Progress --- */
   .progress-wrap{
     display:flex;
@@ -366,6 +392,17 @@
         <option>Not sure / not diagnosed</option>
         <option>Not applicable</option>
       </select>
+    </div>
+
+    <div class="field">
+      <label class="checkbox-opt" id="f-optin-wrap">
+        <input type="checkbox" id="f-optin">
+        <span>Yes, add me to the email list for future Purple State of Mind and THE ARC events and updates.</span>
+      </label>
+    </div>
+
+    <div class="disclaimer">
+      This bingo trail is for educational and informational purposes only and is not medical advice. Please consult your doctor or a qualified healthcare provider before making any dietary changes.
     </div>
 
     <button class="btn btn-primary btn-block" id="intro-continue" onclick="submitIntro()">Continue to my bingo card</button>
@@ -609,6 +646,12 @@ function renderCaregiverOptions(){
 }
 renderCaregiverOptions();
 
+const optinWrap = document.getElementById('f-optin-wrap');
+const optinInput = document.getElementById('f-optin');
+optinInput.addEventListener('change', ()=>{
+  optinWrap.classList.toggle('selected', optinInput.checked);
+});
+
 function submitIntro(){
   const name = document.getElementById('f-name').value.trim();
   const email = document.getElementById('f-email').value.trim();
@@ -622,7 +665,8 @@ function submitIntro(){
     phone: document.getElementById('f-phone').value.trim(),
     zip: document.getElementById('f-zip').value.trim(),
     caregiver: (document.querySelector('input[name="caregiver"]:checked')||{}).value || '',
-    dementiaType: document.getElementById('f-dementiatype').value
+    dementiaType: document.getElementById('f-dementiatype').value,
+    emailOptIn: document.getElementById('f-optin').checked
   };
   buildCard();
   goTo('screen-grid');
