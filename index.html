@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Purple State of Mind — Brain Health Bingo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6EFE2;
+    --card:#FFFDF8;
+    --ink:#2B1B33;
+    --ink-soft:#5B4A63;
+    --plum:#6B2D5C;
+    --plum-deep:#4A1F40;
+    --leaf:#4C6B3D;
+    --leaf-soft:#E4EBDD;
+    --gold:#C98A2C;
+    --gold-soft:#F6E7C9;
+    --line:#E4D9C3;
+    --radius:18px;
+    --shadow:0 6px 20px rgba(43,27,51,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 10% 8%, rgba(107,45,92,0.06) 0, transparent 40%),
+      radial-gradient(circle at 90% 92%, rgba(76,107,61,0.08) 0, transparent 45%);
+    color:var(--ink);
+    font-family:'Figtree',sans-serif;
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:20px 14px 50px;
+    display:flex;
+    flex-direction:column;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    line-height:1.15;
+    margin:0 0 8px;
+    color:var(--plum-deep);
+  }
+  p{margin:0 0 12px; line-height:1.5; color:var(--ink-soft);}
+  .screen{display:none; flex-direction:column; flex:1;}
+  .screen.active{display:flex;}
+
+  /* --- Hero / welcome --- */
+  .hero-badge{
+    align-self:flex-start;
+    background:var(--gold-soft);
+    color:var(--plum-deep);
+    font-size:13px;
+    font-weight:600;
+    padding:6px 14px;
+    border-radius:100px;
+    margin-bottom:18px;
+    border:1px solid var(--gold);
+  }
+  .hero-title{font-size:30px; margin-bottom:10px;}
+  .hero-sub{font-size:16px; margin-bottom:26px;}
+  .stamp-preview{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:28px;
+  }
+  .stamp-chip{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:8px 12px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .btn{
+    appearance:none;
+    border:none;
+    border-radius:100px;
+    padding:16px 24px;
+    font-family:'Figtree',sans-serif;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+    transition:transform .12s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{
+    background:var(--plum);
+    color:#fff;
+    box-shadow:var(--shadow);
+  }
+  .btn-secondary{
+    background:transparent;
+    color:var(--plum);
+    border:1.5px solid var(--plum);
+  }
+  .btn-block{width:100%;}
+  .btn[disabled]{opacity:.45; cursor:not-allowed;}
+
+  /* --- Form fields --- */
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--plum-deep);
+    margin-bottom:6px;
+  }
+  .field input[type=text],
+  .field input[type=email],
+  .field input[type=tel],
+  .field select{
+    width:100%;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background:var(--card);
+    font-family:'Figtree',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .field input:focus,.field select:focus{
+    outline:2px solid var(--plum);
+    outline-offset:1px;
+  }
+  .choice-row{display:flex; flex-direction:column; gap:8px;}
+  .choice-opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--card);
+    cursor:pointer;
+    font-size:15px;
+  }
+  .choice-opt input{accent-color:var(--plum); width:18px; height:18px; flex:none;}
+  .choice-opt.selected{border-color:var(--plum); background:#FBF1F8;}
+
+  /* --- Progress --- */
+  .progress-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .progress-track{
+    flex:1;
+    height:8px;
+    background:var(--line);
+    border-radius:100px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--leaf), var(--plum));
+    width:0%;
+    transition:width .3s ease;
+  }
+  .progress-label{font-size:13px; font-weight:700; color:var(--plum-deep); white-space:nowrap;}
+
+  /* --- Bingo grid (true 5x5) --- */
+  .grid-title{margin-bottom:4px;}
+  .grid-sub{font-size:14px; margin-bottom:16px;}
+  .bingo-grid{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:6px;
+    margin-bottom:22px;
+  }
+  .square{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:11px;
+    border:1.5px solid var(--line);
+    background:var(--card);
+    padding:5px 4px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .square.action{
+    background:var(--leaf-soft);
+    border-color:#C7D6BB;
+  }
+  .square.free{
+    background:var(--gold-soft);
+    border-color:var(--gold);
+  }
+  .square-icon{font-size:17px; line-height:1;}
+  .square-label{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:9.5px;
+    color:var(--plum-deep);
+    line-height:1.15;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .square.done{border-color:var(--leaf);}
+  .stamp{
+    position:absolute;
+    top:3px;
+    right:3px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--leaf);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:700;
+    transform:scale(0);
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .square.done .stamp{transform:scale(1);}
+
+  /* --- Stop detail --- */
+  .stop-loc{
+    display:inline-block;
+    background:var(--gold-soft);
+    color:var(--plum-deep);
+    font-size:12.5px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:14px;
+    align-self:flex-start;
+  }
+  .stop-intro{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:14.5px;
+    margin-bottom:20px;
+  }
+  .question-block{margin-bottom:22px;}
+  .q-num{
+    font-size:12px;
+    font-weight:700;
+    color:var(--gold);
+    letter-spacing:0.3px;
+    margin-bottom:4px;
+  }
+  .q-prompt{
+    font-weight:600;
+    font-size:15.5px;
+    color:var(--ink);
+    margin-bottom:10px;
+  }
+  .q-tf-row{display:flex; gap:10px;}
+  .q-tf-row .choice-opt{flex:1; justify-content:center;}
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .back-btn{
+    background:none;
+    border:none;
+    font-size:22px;
+    color:var(--plum);
+    cursor:pointer;
+    padding:4px 8px 4px 0;
+  }
+
+  .footer-note{
+    font-size:12px;
+    color:var(--ink-soft);
+    text-align:center;
+    margin-top:auto;
+    padding-top:20px;
+  }
+
+  .success-icon{font-size:52px; margin-bottom:6px;}
+  .center{text-align:center; align-items:center;}
+
+  @media (max-width:360px){
+    .square-label{font-size:8.5px;}
+    .square-icon{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1: Welcome -->
+  <section class="screen active" id="screen-welcome">
+    <span class="hero-badge">Farmers Market Brain Health Bingo</span>
+    <h1 class="hero-title">Purple State of Mind</h1>
+    <p class="hero-sub">Walk the market, taste real samples, and answer a couple of quick questions at each stop. Your bingo card — and your questions — are shuffled just for you.</p>
+    <div class="stamp-preview">
+      <span class="stamp-chip">🫐 Berries</span>
+      <span class="stamp-chip">🫚 Ginger</span>
+      <span class="stamp-chip">🥬 Kale</span>
+      <span class="stamp-chip">🍵 Green Tea</span>
+      <span class="stamp-chip">⭐ Free space</span>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="goTo('screen-intro')">Get my card</button>
+    <p class="footer-note">Takes about 10–15 minutes as you move through the market.</p>
+  </section>
+
+  <!-- SCREEN 2: Contact + care journey -->
+  <section class="screen" id="screen-intro">
+    <div class="topbar">
+      <button class="back-btn" onclick="goTo('screen-welcome')" aria-label="Back">←</button>
+      <h2 style="margin:0;">Before you start</h2>
+    </div>
+    <p>So we can keep you posted about future events near you.</p>
+
+    <div class="field">
+      <label for="f-name">Full name</label>
+      <input type="text" id="f-name" placeholder="Jane Doe" required>
+    </div>
+    <div class="field">
+      <label for="f-email">Email</label>
+      <input type="email" id="f-email" placeholder="jane@email.com" required>
+    </div>
+    <div class="field">
+      <label for="f-phone">Phone number</label>
+      <input type="tel" id="f-phone" placeholder="(206) 555-0100">
+    </div>
+    <div class="field">
+      <label for="f-zip">ZIP code</label>
+      <input type="text" id="f-zip" inputmode="numeric" placeholder="98118">
+    </div>
+
+    <div class="field">
+      <label>Are you a dementia caregiver?</label>
+      <div class="choice-row" id="f-caregiver"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-dementiatype">What type of dementia does or did your loved one have?</label>
+      <select id="f-dementiatype">
+        <option value="">Select one</option>
+        <option>Alzheimer's disease</option>
+        <option>Vascular dementia</option>
+        <option>Lewy body dementia</option>
+        <option>Frontotemporal dementia</option>
+        <option>Mixed dementia</option>
+        <option>Not sure / not diagnosed</option>
+        <option>Not applicable</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="intro-continue" onclick="submitIntro()">Continue to my bingo card</button>
+  </section>
+
+  <!-- SCREEN 3: Bingo grid -->
+  <section class="screen" id="screen-grid">
+    <h2 class="grid-title">Your bingo card</h2>
+    <p class="grid-sub">Tap any square as you reach that vendor. Every card — and every square's questions — is shuffled just for you.</p>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-label" id="progress-label">0 / 0</span>
+    </div>
+    <div class="bingo-grid" id="bingo-grid"></div>
+    <button class="btn btn-primary btn-block" id="submit-card-btn" onclick="submitAll()">Submit my card</button>
+    <p class="footer-note">You can submit any time — you don't have to finish every square.</p>
+  </section>
+
+  <!-- SCREEN 4: Stop detail (dynamic) -->
+  <section class="screen" id="screen-stop">
+    <div class="topbar">
+      <button class="back-btn" onclick="goTo('screen-grid')" aria-label="Back to card">←</button>
+      <h2 id="stop-title" style="margin:0;"></h2>
+    </div>
+    <span class="stop-loc" id="stop-loc"></span>
+    <div class="stop-intro" id="stop-intro"></div>
+    <div id="stop-questions"></div>
+    <button class="btn btn-primary btn-block" onclick="finishStop()">Stamp this square</button>
+  </section>
+
+  <!-- SCREEN 5: Done -->
+  <section class="screen center" id="screen-done">
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+      <div class="success-icon">🟣</div>
+      <h2>Card submitted!</h2>
+      <p>Thanks for exploring the Purple State of Mind trail. We'll be in touch about future events.</p>
+      <button class="btn btn-secondary" onclick="goTo('screen-grid')">Back to my card</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============ CONFIG ============ */
+// Paste the "Web app URL" from your deployed Google Apps Script here.
+// See apps-script.gs for the code to deploy. Leave blank to test locally
+// (answers will just print to the console instead of saving anywhere).
+const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbwa8YlfrPywWiKDa_5jPsHILMVeHfYBldqlIp3XV0UzrqDBhdjJ3-zRKHMVgwFYmztX/exec";
+
+/* ============ CONTENT ============ */
+const CAREGIVER_OPTIONS = ["Yes", "No", "Former dementia caregiver"];
+
+// Each category can hold as many questions as you want — every visitor
+// only ever sees a random 2 of them for that square.
+// type: 'text' (fill in the blank) | 'mc' (multiple choice) | 'tf' (true/false)
+const CATEGORIES = [
+  {
+    id: "berries",
+    icon: "🫐",
+    label: "Berries",
+    location: "Layla's Lemonade booth",
+    intro: "Berries are nutrient-dense, offering high amounts of vitamin K, E, and C. Read the poster featuring berries at the Layla's Lemonade booth to answer the following questions.",
+    questions: [
+      { type: "text", prompt: "Which compound causes the deep purple color in blackberries?" },
+      { type: "text", prompt: "What does that compound support?" },
+      { type: "mc", prompt: "Which fruit contains compounds that cross the blood-brain barrier to directly protect neurons?", options: ["Blueberries", "Huckleberries", "Blackberries", "None of the above"] },
+      { type: "tf", prompt: "True or false: long-term studies show that regular berry consumption can delay cognitive aging by up to 2.5 years." },
+      { type: "text", prompt: "Which two components aid in cholesterol control and blood pressure — reducing heart disease and preventing insulin spikes?" }
+    ]
+  },
+  {
+    id: "turmeric",
+    icon: "🟡",
+    label: "Turmeric",
+    location: "Layla's Lemonade booth",
+    intro: "Remain at Layla's Lemonade to read the poster dedicated to turmeric.",
+    questions: [
+      { type: "text", prompt: "What is the natural compound found within turmeric?" },
+      { type: "text", prompt: "What are the active properties this compound is known for?" },
+      { type: "mc", prompt: "Which symptoms do case studies suggest turmeric may help manage?", options: ["Irritability", "Agitation", "Anxiety", "Apathy"] },
+      { type: "text", prompt: "Turmeric is rich in phytonutrients that protect the body in what ways?" }
+    ]
+  },
+  {
+    id: "ginger",
+    icon: "🫚",
+    label: "Ginger",
+    location: "Layla's Lemonade booth",
+    intro: "The Purple State of Mind exhibit at Layla's Lemonade also highlights the importance of ginger, and incorporates it into a few of our lemonade recipes. Ginger is rich in potassium, shown to lead to an improvement in cognitive performance and generation of neuronal plasticity.",
+    questions: [
+      { type: "text", prompt: "Which active compound in ginger helps fight inflammation and oxidative stress?" },
+      { type: "text", prompt: "Name three additional active compounds in ginger." },
+      { type: "text", prompt: "What do the active compounds in ginger promote?" },
+      { type: "text", prompt: "Name additional medicinal benefits of ginger." },
+      { type: "text", prompt: "What are three micronutrients that ginger is rich in?" }
+    ]
+  },
+  {
+    id: "smash",
+    icon: "🐟",
+    label: "SMASH fish",
+    location: "The Taste Tutor's canopy",
+    intro: "SMASH stands for salmon, mackerel, anchovies, sardines, and herring — fish that are highly nutritious and packed with omega-3 fatty acids, considered excellent sources to protect the heart and brain. Visit the Taste Tutor to try samples and learn about incorporating fish low in mercury, and assorted veggies, into your diet.",
+    questions: [
+      { type: "text", prompt: "Which fatty acids are these particular fishes packed with?" },
+      { type: "text", prompt: "Which two organs is the acronym SMASH an excellent source to support?" },
+      { type: "text", prompt: "What do EPA and DHA help with?" },
+      { type: "text", prompt: "Which nutrients are the SMASH fishes excellent sources of?" },
+      { type: "text", prompt: "Which brain functions do the nutrients in SMASH support?" }
+    ]
+  },
+  {
+    id: "kale",
+    icon: "🥬",
+    label: "Kale",
+    location: "The Taste Tutor's canopy",
+    intro: "Kale is associated with slower age-related cognitive decline. Try it in smoothies, stir-fry, salads, and soups. Remain at the Taste Tutor's canopy to answer the following questions on the kale poster.",
+    questions: [
+      { type: "tf", prompt: "True or false: kale is considered a key component of brain-healthy diets." },
+      { type: "text", prompt: "Which vitamins break down homocysteine?" },
+      { type: "text", prompt: "What is a high source of kaempferol, protects nerve cells, and reduces the risk for Alzheimer's?" },
+      { type: "text", prompt: "Which two flavonoids protect brain cells from the damage of oxidative stress?" }
+    ]
+  },
+  {
+    id: "beans",
+    icon: "🫘",
+    label: "Beans & legumes",
+    location: "The Taste Tutor's canopy",
+    intro: "Premier foods for brain health and steady fuel. Remain at the Taste Tutor's canopy to answer the following questions on the beans poster.",
+    questions: [
+      { type: "text", prompt: "What are some benefits of legumes that support cognitive function and reduce dementia risk?" },
+      { type: "text", prompt: "As steady fuel for the brain, what are two additional benefits of beans?" },
+      { type: "text", prompt: "Name the top legumes for cognitive function." },
+      { type: "text", prompt: "What are the benefits of navy beans?" },
+      { type: "text", prompt: "What are the benefits of black beans?" }
+    ]
+  },
+  {
+    id: "bokchoy",
+    icon: "🥬",
+    label: "Bok choy",
+    location: "Tilth Alliance exhibit",
+    intro: "Bok choy contains several nutrients beneficial for cognitive function. Find the Tilth Alliance exhibit to view the poster on bok choy and answer the following questions.",
+    questions: [
+      { type: "text", prompt: "What does bok choy contain that protects brain cells from the damage of oxidative stress?" },
+      { type: "text", prompt: "Bok choy is a great source of vitamin K — what are the two benefits of vitamin K?" },
+      { type: "text", prompt: "Bok choy contains sulforaphane, a powerful phytochemical — what may it help protect against?" },
+      { type: "text", prompt: "Bok choy contains choline, a B vitamin that boosts acetylcholine. What is acetylcholine?" }
+    ]
+  },
+  {
+    id: "carrots",
+    icon: "🥕",
+    label: "Carrots, sweet potato & cantaloupe",
+    location: "Klickitat Farms canopy",
+    intro: "Klickitat Farms features wonderful organic homemade vinegars, wines, pesto, cold-pressed juices, and more. Find their canopy and read the poster on carrots, sweet potato, and cantaloupe.",
+    questions: [
+      { type: "mc", prompt: "What are the benefits of beta-carotene?", options: ["Fight oxidative stress", "Protect brain cells", "May slow cognitive decline / reduce Alzheimer's risk", "Turn you orange"] },
+      { type: "mc", prompt: "What are the benefits of ferulic acid?", options: ["Fight free radicals", "Offer liver health", "Lower blood pressure", "Protect against chronic disease"] }
+    ]
+  },
+  {
+    id: "tamarind",
+    icon: "🟤",
+    label: "Tamarind",
+    location: "Klickitat Farms display",
+    intro: "Remain at the Klickitat Farms display to learn about the wonderful benefits of tamarind for brain and gut health. Our brain-gut axis is an important connection to protect and strengthen — our gut is considered a second brain. Be sure to try some samples to see which dressings, vinegars, and dips you'd like to bring home.",
+    questions: [
+      { type: "mc", prompt: "What are tamarind pulp and seeds celebrated for?", options: ["Digestion", "Reducing inflammation", "Protecting against chronic disease", "Being sour and difficult to chew"] },
+      { type: "mc", prompt: "Which antioxidants is tamarind packed with?", options: ["Polyphenols", "Flavonoids"] },
+      { type: "mc", prompt: "How does tamarind achieve blood sugar control?", options: ["Relatively low glycemic index", "May improve insulin sensitivity", "Helps prevent sugar spikes"] }
+    ]
+  },
+  {
+    id: "greentea",
+    icon: "🍵",
+    label: "Green tea",
+    location: "Klickitat Farms display",
+    intro: "According to the National Institutes of Health, drinking green tea is scientifically associated with lowering one's risk of developing dementia and age-related cognitive decline (NIH, 2025). Remain at the Klickitat Farms display to read about green tea's benefits and answer the following.",
+    questions: [
+      { type: "tf", prompt: "True or false: regular green tea drinkers show a significant reduction in white matter lesions (areas of brain damage closely tied to vascular dementia and Alzheimer's disease)." },
+      { type: "text", prompt: "What are the potent antioxidants that help reduce oxidative stress and brain inflammation?" },
+      { type: "text", prompt: "What are the contributing factors to dementia and Alzheimer's disease that those antioxidants address?" }
+    ]
+  }
+];
+
+const ACTIONS = [
+  { id: "action-selfie", icon: "🤳", label: "Selfie moment", intro: "Find Dr. Brown and take a selfie together!", location: "Anywhere in the market" },
+  { id: "action-stretch", icon: "🧘", label: "Stretch break", intro: "Take a moment to stretch before your next stop.", location: "Anywhere in the market" },
+  { id: "action-water", icon: "💧", label: "Hydration break", intro: "Take a moment to drink 20 ounces of water.", location: "Anywhere in the market" },
+  { id: "action-mindful", icon: "🌬️", label: "Mindful breather", intro: "Take a moment for mindfulness and a quick breather.", location: "Anywhere in the market" }
+];
+
+const FREE_SPACE = { id: "free", icon: "⭐", label: "FREE" };
+
+/* ============ STATE ============ */
+let intro = {};
+let answers = {}; // { squareUid: {...} }
+let card = [];    // 25 square instances, in grid order (index 12 = center = FREE)
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// Picks n random question indices from a category, preferring not to repeat
+// indices already used elsewhere on this card for the same category.
+function pickQuestionIndices(catQuestions, n, avoid){
+  let pool = catQuestions.map((q,i)=>i).filter(i=>!avoid.includes(i));
+  if(pool.length < n) pool = catQuestions.map((q,i)=>i); // not enough left, allow repeats
+  return shuffle(pool).slice(0, n);
+}
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ============ SCREEN: intro ============ */
+function renderCaregiverOptions(){
+  const wrap = document.getElementById('f-caregiver');
+  wrap.innerHTML = '';
+  CAREGIVER_OPTIONS.forEach(opt=>{
+    const id = 'cg-'+opt.replace(/\s+/g,'-');
+    const div = document.createElement('label');
+    div.className='choice-opt';
+    div.innerHTML = `<input type="radio" name="caregiver" value="${opt}" id="${id}"><span>${opt}</span>`;
+    div.addEventListener('click',()=>{
+      document.querySelectorAll('#f-caregiver .choice-opt').forEach(el=>el.classList.remove('selected'));
+      div.classList.add('selected');
+    });
+    wrap.appendChild(div);
+  });
+}
+renderCaregiverOptions();
+
+function submitIntro(){
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if(!name || !email){
+    alert('Please fill in your name and email so we can follow up with you.');
+    return;
+  }
+  intro = {
+    name,
+    email,
+    phone: document.getElementById('f-phone').value.trim(),
+    zip: document.getElementById('f-zip').value.trim(),
+    caregiver: (document.querySelector('input[name="caregiver"]:checked')||{}).value || '',
+    dementiaType: document.getElementById('f-dementiatype').value
+  };
+  buildCard();
+  goTo('screen-grid');
+}
+
+/* ============ BUILD THE 5x5 CARD ============ */
+function buildCard(){
+  // 10 categories x 2 squares each = 20, using a random 2-of-N question
+  // subset per square (the two squares for a category try not to overlap).
+  const quizSquares = [];
+  CATEGORIES.forEach(cat=>{
+    const first = pickQuestionIndices(cat.questions, 2, []);
+    const second = pickQuestionIndices(cat.questions, 2, first);
+    [first, second].forEach((idxs, i)=>{
+      quizSquares.push({
+        uid: cat.id + '-' + i,
+        type: 'quiz',
+        catId: cat.id,
+        icon: cat.icon,
+        label: cat.label,
+        location: cat.location,
+        intro: cat.intro,
+        questionIndices: idxs
+      });
+    });
+  });
+
+  const actionSquares = ACTIONS.map(a=>({
+    uid: a.id,
+    type: 'action',
+    icon: a.icon,
+    label: a.label,
+    location: a.location,
+    intro: a.intro
+  }));
+
+  // 20 quiz + 4 action = 24, shuffled, then FREE dropped into the center (index 12) of a 5x5 grid.
+  const rest = shuffle(quizSquares.concat(actionSquares));
+  const freeSquare = { uid: 'free', type: 'free', icon: FREE_SPACE.icon, label: FREE_SPACE.label };
+
+  card = [];
+  let ri = 0;
+  for(let i=0;i<25;i++){
+    if(i === 12){ card.push(freeSquare); }
+    else { card.push(rest[ri++]); }
+  }
+
+  // Free space is an automatic stamp.
+  answers[freeSquare.uid] = { completed: true };
+
+  renderGrid();
+}
+
+/* ============ SCREEN: grid ============ */
+function renderGrid(){
+  const grid = document.getElementById('bingo-grid');
+  grid.innerHTML = '';
+  card.forEach(sq=>{
+    const done = !!answers[sq.uid];
+    const btn = document.createElement('button');
+    btn.className = 'square' + (sq.type==='action' ? ' action' : '') + (sq.type==='free' ? ' free' : '') + (done ? ' done' : '');
+    btn.innerHTML = `
+      <div class="square-icon">${sq.icon}</div>
+      <div class="square-label">${sq.label}</div>
+      <div class="stamp">✓</div>
+    `;
+    if(sq.type !== 'free'){
+      btn.onclick = ()=>openStop(sq.uid);
+    }
+    grid.appendChild(btn);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const total = card.length;
+  const done = Object.keys(answers).length;
+  document.getElementById('progress-fill').style.width = (done/total*100)+'%';
+  document.getElementById('progress-label').textContent = `${done} / ${total}`;
+}
+
+/* ============ SCREEN: stop detail ============ */
+let currentUid = null;
+
+function openStop(uid){
+  currentUid = uid;
+  const sq = card.find(s=>s.uid===uid);
+  document.getElementById('stop-title').textContent = sq.label;
+  document.getElementById('stop-loc').textContent = sq.location;
+  document.getElementById('stop-intro').textContent = sq.intro;
+
+  const qWrap = document.getElementById('stop-questions');
+  qWrap.innerHTML = '';
+
+  if(sq.type === 'quiz'){
+    const cat = CATEGORIES.find(c=>c.id===sq.catId);
+    const prior = answers[uid] || {};
+    sq.questionIndices.forEach((qi, displayIdx)=>{
+      const q = cat.questions[qi];
+      const block = document.createElement('div');
+      block.className = 'question-block';
+      const priorEntry = prior[qi];
+      const priorVal = priorEntry ? priorEntry.answer : '';
+
+      if(q.type === 'text'){
+        block.innerHTML = `
+          <div class="q-num">Question ${displayIdx+1}</div>
+          <div class="q-prompt">${q.prompt}</div>
+          <input type="text" data-qi="${qi}" class="stop-answer" placeholder="Type your answer" value="${priorVal}">
+        `;
+      } else if(q.type === 'mc'){
+        let opts = q.options.map(o=>`
+          <label class="choice-opt${priorVal===o?' selected':''}">
+            <input type="radio" name="qi${qi}" data-qi="${qi}" value="${o}" ${priorVal===o?'checked':''}>
+            <span>${o}</span>
+          </label>`).join('');
+        block.innerHTML = `
+          <div class="q-num">Question ${displayIdx+1}</div>
+          <div class="q-prompt">${q.prompt}</div>
+          <div class="choice-row">${opts}</div>
+        `;
+      } else if(q.type === 'tf'){
+        block.innerHTML = `
+          <div class="q-num">Question ${displayIdx+1}</div>
+          <div class="q-prompt">${q.prompt}</div>
+          <div class="q-tf-row">
+            <label class="choice-opt${priorVal==='True'?' selected':''}"><input type="radio" name="qi${qi}" data-qi="${qi}" value="True" ${priorVal==='True'?'checked':''}><span>True</span></label>
+            <label class="choice-opt${priorVal==='False'?' selected':''}"><input type="radio" name="qi${qi}" data-qi="${qi}" value="False" ${priorVal==='False'?'checked':''}><span>False</span></label>
+          </div>
+        `;
+      }
+      qWrap.appendChild(block);
+    });
+
+    qWrap.querySelectorAll('.choice-opt').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const name = el.querySelector('input').name;
+        qWrap.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
+          inp.closest('.choice-opt').classList.remove('selected');
+        });
+        el.classList.add('selected');
+      });
+    });
+  }
+  // action squares have no questions — just the intro + stamp button
+
+  goTo('screen-stop');
+}
+
+function finishStop(){
+  const sq = card.find(s=>s.uid===currentUid);
+  const result = {};
+  if(sq.type === 'quiz'){
+    const cat = CATEGORIES.find(c=>c.id===sq.catId);
+    document.querySelectorAll('#stop-questions .stop-answer').forEach(inp=>{
+      const qi = inp.dataset.qi;
+      result[qi] = { question: cat.questions[qi].prompt, answer: inp.value.trim() };
+    });
+    document.querySelectorAll('#stop-questions input[type=radio]:checked').forEach(inp=>{
+      const qi = inp.dataset.qi;
+      result[qi] = { question: cat.questions[qi].prompt, answer: inp.value };
+    });
+  } else {
+    result.completed = true;
+  }
+  answers[currentUid] = result;
+  renderGrid();
+  goTo('screen-grid');
+}
+
+/* ============ SUBMIT ============ */
+async function submitAll(){
+  const payload = {
+    submittedAt: new Date().toISOString(),
+    ...intro,
+    answers
+  };
+
+  if(!SUBMIT_URL){
+    console.log('No SUBMIT_URL configured yet — here is the payload that would be sent:', payload);
+    goTo('screen-done');
+    return;
+  }
+
+  const btn = document.getElementById('submit-card-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try{
+    await fetch(SUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+      body: JSON.stringify(payload)
+    });
+    goTo('screen-done');
+  }catch(err){
+    alert('We could not submit right now. Please check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Submit my card';
+  }
+}
+</script>
+</body>
+</html>
